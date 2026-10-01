@@ -1,35 +1,36 @@
 # loop_quantum_gravity
-Simule la gravité quantique a boucle 
 
-La gravité quantique en boucles (Loop Quantum Gravity, LQG) est une théorie qui tente de décrire la nature quantique de l'espace-temps. Les travaux de Carlo Rovelli, un des principaux physiciens travaillant sur la LQG, se concentrent sur la quantification de la géométrie de l'espace-temps.
+Boîte à outils Python pour **simuler et visualiser des briques réelles de la gravité quantique à boucles (LQG)**.
+Remplace l'ancienne grille 3D aléatoire (purement illustrative) par des calculs vérifiés contre des résultats connus.
 
-Pour simuler un concept inspiré par la gravité quantique en boucles, nous pouvons créer une simulation simple qui illustre l'idée que l'espace-temps est constitué de petits "grains" ou "boucles" discrets, plutôt que d'être continu. Cette simulation ne sera pas une représentation exacte de la LQG, mais elle pourra aider à visualiser certaines idées de base.
+## Installation et utilisation
 
-Exemple de Simulation
-Nous allons créer un programme Python qui génère une grille 3D d'espace-temps, où chaque point de la grille représente un petit volume quantifié. Nous allons également colorier ces points pour représenter différentes propriétés de l'espace-temps, comme la densité.
+```bash
+pip install -r requirements.txt
+python loop_quantum_gravity.py            # tout exécuter, figures dans ./output
+python loop_quantum_gravity.py cosmology  # spectra | network | blackhole | cosmology | foam
+python -m pytest                          # tests
+```
 
-Prérequis
-Installez les bibliothèques nécessaires :
+## Contenu
 
-pip install numpy matplotlib
+| Module | Ce qu'il calcule | Vérification |
+|---|---|---|
+| `lqg/su2.py` | matrices de spin, multiplicités de Clebsch-Gordan, dimension des intertwineurs, symboles 6j exacts (Racah, arithmétique rationnelle) | {1 1 1;1 1 1} = 1/6, dimensions d'intertwineurs |
+| `lqg/spectra.py` | spectre d'aire `A_j = 8πγ ℓ_P² √(j(j+1))`, opérateur volume d'un nœud (tétraèdre quantique, nœud cubique) par diagonalisation exacte de `J₁·(J₂×J₃)` sur l'espace invariant | `|Q| = √3/4` pour 4 spins ½ |
+| `lqg/spin_network.py` | réseaux de spin (graphe + spins + intertwineurs), admissibilité (invariance de jauge), aire, volume, dimension de l'espace de Hilbert, échantillonnage Monte-Carlo préservant la jauge | tests d'admissibilité |
+| `lqg/spin_foam.py` | amplitude du tétraèdre (6j) et asymptotique de Ponzano-Regge (géométrie de Regge) | accord exact/asymptotique dès j ≈ 20 |
+| `lqg/black_hole.py` | entropie d'un trou noir : comptage dynamique des états de l'horizon (`Σm = 0`), γ tel que `S = A/4` | pente 0,251 ≈ 1/4 |
+| `lqg/cosmology.py` | cosmologie quantique à boucles effective : rebond à `ρ_c ≈ 0,41 ρ_P` au lieu du Big Bang, champ massif ou non | égal à la solution analytique à 1e-11 |
 
-Explications
-Paramètres de la Simulation :
+## Résultats
 
-grid_size : Taille de la grille 3D (par exemple, 10x10x10).
-density : Génère une matrice 3D de densité aléatoire pour chaque point de la grille.
-Création des Coordonnées de la Grille :
+- Gap d'aire : `A_{1/2} = 5,17 ℓ_P²` (γ = 0,2375).
+- Le comptage à ponctures discernables donne γ ≈ 0,2741 (Domagała-Lewandowski) ; la valeur 0,2375 par défaut est celle de Meissner, reprise de la littérature et non recalculée ici.
+- Cosmologie : `ρ ≤ ρ_c`, `H = 0` au rebond, retour à la relativité générale pour `ρ ≪ ρ_c`.
 
-np.indices crée une grille 3D de coordonnées.
-Visualisation de la Grille 3D :
+## Limites (honnêteté scientifique)
 
-Utilise matplotlib pour créer une figure 3D.
-Boucle sur chaque point de la grille pour dessiner un point si la densité est au-dessus d'un certain seuil.
-ax.scatter dessine les points dans l'espace 3D avec une couleur et une taille proportionnelles à la densité.
-Configuration des Axes :
-
-Définit les étiquettes des axes et le titre du graphique.
-Notes
-Cette simulation est une simplification et une visualisation pédagogique inspirée par les concepts de la gravité quantique en boucles. Elle ne représente pas les détails mathématiques complexes de la LQG.
-Pour une simulation plus précise et complexe, il faudrait une compréhension plus approfondie des mathématiques et de la physique derrière la LQG, ainsi que des ressources de calcul plus avancées.
-Ce programme permet de visualiser l'idée que l'espace-temps pourrait être composé de petits volumes discrets, en utilisant une grille 3D et des densités aléatoires.
+- L'opérateur volume des nœuds 6-valents et d'ordre supérieur est une approximation normalisée sur le cube classique ; seul le cas 4-valent suit la formule standard de Bianchi-Haggard.
+- Pas de mousse de spin 4D complète (EPRL) : seule l'amplitude du tétraèdre SU(2) de Ponzano-Regge est implémentée.
+- La cosmologie est la dynamique **effective** (champ moyen), pas la dynamique quantique complète.
